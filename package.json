@@ -1,0 +1,47 @@
+{
+	"name": "nulllogger",
+	"author": "NexusTools",
+	"homepage": "https://www.nexustools.net/projects#node-nulllogger",
+	"version": "0.0.1",
+	"licenses": [
+		{
+			"type": "Apache License 2.0",
+			"url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+		}
+	],
+	"description": "A logging abstraction layer, because so many loggers seem to exist...",
+	"keywords": [
+        "async",
+        "cluster",
+		"NexusTools",
+        "abstract",
+        "logging",
+        "logger"
+	],
+	"bugs": {
+		"url" : "https://github.com/NexusTools/node-nulllogger/issues"
+	},
+	"repository": {
+		"type" : "git",
+		"url" : "https://github.com/NexusTools/node-nulllogger.git"  
+	},
+	"preferGlobal" : true,
+    "typesource": "lib",
+	"main" : "index.js",
+	"scripts": {
+		"test": "mocha --bail --require ./test/support/env --reporter spec --timeout 10000 --globals __typeinclude__ --check-leaks test/",
+		"test-coverage": "istanbul cover node_modules/mocha/bin/_mocha -- --timeout 20000 --require test/support/env --bail --reporter spec --globals __typeinclude__ --check-leaks test/",
+		"test-travis": "istanbul cover node_modules/mocha/bin/_mocha --report lcovonly -- --timeout 20000 --require test/support/env --reporter spec --globals __typeinclude__ --check-leaks test/",
+        "postinstall": "tscac lib || true"
+	},
+	"engines" : {
+		"node" : ">=1.0.0"
+	},
+	"dependencies": {
+        "typeinclude": ">=0.4.7"
+	},
+	"devDependencies": {
+		"istanbul": "0.3.2",
+    	"mocha": "~1.21.4"
+	}
+}

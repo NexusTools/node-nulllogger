@@ -1,0 +1,7 @@
+/node_modules
+/compiled
+/coverage
+
+npm-debug.log
+*.bak
+*~
