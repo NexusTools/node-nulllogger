@@ -21,7 +21,7 @@ class TextLoggerImpl extends BasicLoggerImpl {
             });
         messages.forEach(function(message){
             out.write(" ");
-            out.write(message);
+            BasicLoggerImpl.write(message, out);
         });
         out.write("\n\n");
     }

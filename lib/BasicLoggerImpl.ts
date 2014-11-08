@@ -1,3 +1,5 @@
+@nodereq underscore:_
+
 @reference LoggerImpl
 
 class BasicLoggerImpl implements LoggerImpl {
@@ -23,6 +25,24 @@ class BasicLoggerImpl implements LoggerImpl {
             tim = "0" + tim;
         
         return tim;
+    }
+    
+    public static write(message:any, out:stream.Writable) {
+        if(_.isString(message))
+            out.write(message);
+        else {
+            var obj = _.isObject(message) && obj != "object";
+            if(obj) {
+                var type = message.constructor.name;
+                if(obj = (type != "Object" && type != "Array")) {
+                    out.write(type);
+                    out.write("(");
+                }
+            }
+            out.write(JSON.stringify(message));
+            if(obj)
+                out.write(")");
+        }
     }
     
 }

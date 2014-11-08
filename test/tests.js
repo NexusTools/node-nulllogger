@@ -20,8 +20,20 @@ it("require main", function(){
 describe('api', function() {
     it("test log", function(){
         logger.gears("Test");
-        logger.info("Test");
-        logger.warn("Test");
+        logger.info("Test", "Tester");
+        logger.warn("Test", 23);
         logger.error("Test");
+    });
+    var logInstance;
+    it("scope instance", function(){
+        logInstance = new logger("Mocha");
+    });
+    it("scope log", function(){
+        logInstance.gears("Test");
+        logInstance.info("Test");
+        logInstance.info("Test", []);
+        logInstance.info("Test", new Date());
+        logInstance.warn("Test", 44);
+        logInstance.error("Test", {farm: 43});
     });
 });

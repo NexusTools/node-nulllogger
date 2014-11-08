@@ -18,11 +18,11 @@ class CliColorLoggerImpl extends BasicLoggerImpl {
         if(scopes)
             scopes.forEach(function(scope){
                 out.write(" ");
-                out.write(clc.purple(scope));
+                out.write(clc.magenta(scope));
             });
         messages.forEach(function(message){
             out.write(" ");
-            out.write(message);
+            BasicLoggerImpl.write(message, out);
         });
         out.write("\n");
     }
