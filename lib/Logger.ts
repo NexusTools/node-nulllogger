@@ -5,7 +5,6 @@
 @reference LoggerImpl
 @include LoggerLevel
 
-var scopeWrap = /\[([^\]]+)\]/;
 class Logger {
     private static _impl:LoggerImpl;
     private static _out:(level:LoggerImpl) => stream.Writable = function(level:LoggerImpl) {

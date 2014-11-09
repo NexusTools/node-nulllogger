@@ -1,7 +1,7 @@
 enum LoggerLevel {
     Gears, // Internal low-level mechanisms
-    Performance, // Performance related
     Debugging, // Basic debugging
+    Performance, // Performance related
     Timer, // Timers
     Information, // Informative
     Warning, // Warnings
@@ -13,6 +13,7 @@ enum LoggerLevel {
 
 // Aliases
 LoggerLevel.Debug = LoggerLevel.Debugging;
+LoggerLevel.Perf = LoggerLevel.Performance;
 LoggerLevel.Info = LoggerLevel.Information;
 LoggerLevel.Warn = LoggerLevel.Warning;
 

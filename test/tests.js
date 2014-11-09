@@ -35,5 +35,8 @@ describe('api', function() {
         logInstance.info("Test", new Date());
         logInstance.warn("Test", 44);
         logInstance.error("Test", {farm: 43});
+        logInstance.debug(/.+/i);
+        logInstance.perf(new String(373.5));
+        logInstance.error("");
     });
 });

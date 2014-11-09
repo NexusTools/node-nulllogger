@@ -34,9 +34,11 @@ class BasicLoggerImpl implements LoggerImpl {
     }
     
     public static write(message:any, out:stream.Writable) {
-        if(_.isString(message))
-            out.write(message);
-        else {
+        try {
+            if(!_.isString(message))
+                throw "Not a string";
+            out.write("" + message);
+        } catch(e) {
             var obj = _.isObject(message) && obj != "object";
             if(obj) {
                 var type = message.constructor.name;
@@ -45,7 +47,10 @@ class BasicLoggerImpl implements LoggerImpl {
                     out.write("(");
                 }
             }
-            out.write(JSON.stringify(message));
+            if(message instanceof RegExp)
+                out.write(message.toString());
+            else
+                out.write(JSON.stringify(message));
             if(obj)
                 out.write(")");
         }
@@ -67,6 +72,6 @@ if(process.env.VERBOSE) {
 } else if(process.env.NODE_ENV && process.env.NODE_ENV == "test") // Don't crowd testing output
     BasicLoggerImpl._minlevel = LoggerLevel.Silent;
 else
-    BasicLoggerImpl._minlevel = LoggerLevel.Debugging;
+    BasicLoggerImpl._minlevel = LoggerLevel.Perf;
 
 @main BasicLoggerImpl
