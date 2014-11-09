@@ -58,7 +58,6 @@ class Logger {
                     plugin = _typeinclude(path.resolve(pluginDir, plugin[1]));
                     _impl = new plugin();
                 } catch(e) {
-                    console.error(e);
                     return;
                 }
                 throw $break;
