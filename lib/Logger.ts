@@ -20,6 +20,12 @@ class Logger {
 
     private _scopes:string[];
     constructor(...scopes:string[]) {
+        if(!(this instanceof Logger)) {
+            var instance = new Logger();
+            instance._scopes = scopes;
+            return instance;
+        }
+        
         this._scopes = scopes;
     }
 
