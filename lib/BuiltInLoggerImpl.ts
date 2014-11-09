@@ -3,16 +3,16 @@
 @reference LoggerImpl
 @include LoggerLevel
 
-class BasicLoggerImpl implements LoggerImpl {
+class BuiltInLoggerImpl implements LoggerImpl {
     private static _minlevel:LoggerLevel;
     private static _start = Date.now();
     
-    public static isVerbose(level:LoggerLevel) {
-        return level >= BasicLoggerImpl._minlevel;
+    static isVerbose(level:LoggerLevel) {
+        return level >= BuiltInLoggerImpl._minlevel;
     }
     
-    public static elapsed() {
-        var elapsed = Date.now() - BasicLoggerImpl._start;
+    static elapsed() {
+        var elapsed = Date.now() - BuiltInLoggerImpl._start;
         
         var tim = String(elapsed%1000);
         while(tim.length < 3)
@@ -33,7 +33,7 @@ class BasicLoggerImpl implements LoggerImpl {
         return tim;
     }
     
-    public static write(message:any, out:stream.Writable) {
+    static write(message:any, out:stream.Writable) {
         try {
             if(!_.isString(message))
                 throw "Not a string";
@@ -58,23 +58,28 @@ class BasicLoggerImpl implements LoggerImpl {
                 out.write(")");
         }
     }
+	
+	shouldAsync():boolean {
+		return true;
+	}
+	
 }
 
 if(process.env.VERBOSE) {
     var verbose = parseFloat(process.env.VERBOSE);
     if(isFinite(verbose) && !isNaN(verbose))
-        BasicLoggerImpl._minlevel = verbose;
+        BuiltInLoggerImpl._minlevel = verbose;
     else {
         verbose = process.env.VERBOSE;
         verbose = verbose.substring(0, 1).toUpperCase() + verbose.substring(1).toLowerCase();
         if(!LoggerLevel[verbose])
             throw new Error(process.env.VERBOSE + " is not a valid logger verbosity setting.");
         
-        BasicLoggerImpl._minlevel = LoggerLevel[verbose];
+        BuiltInLoggerImpl._minlevel = LoggerLevel[verbose];
     }
 } else if(process.env.NODE_ENV && process.env.NODE_ENV == "test") // Don't crowd testing output
-    BasicLoggerImpl._minlevel = LoggerLevel.Silent;
+    BuiltInLoggerImpl._minlevel = LoggerLevel.Silent;
 else
-    BasicLoggerImpl._minlevel = LoggerLevel.Perf;
+    BuiltInLoggerImpl._minlevel = LoggerLevel.Perf;
 
-@main BasicLoggerImpl
+@main BuiltInLoggerImpl

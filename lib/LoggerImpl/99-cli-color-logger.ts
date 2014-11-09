@@ -2,12 +2,12 @@
 @nodereq stream
 
 @include LoggerLevel
-@include BasicLoggerImpl
+@include BuiltInLoggerImpl
 
 
-class CliColorLoggerImpl extends BasicLoggerImpl {
+class CliColorLoggerImpl extends BuiltInLoggerImpl {
     log(level:LoggerLevel, scopes:string[], messages:any[], out:stream.Writable) {
-        if(!BasicLoggerImpl.isVerbose(level))
+        if(!BuiltInLoggerImpl.isVerbose(level))
             return;
         
         var color;
@@ -75,7 +75,7 @@ class CliColorLoggerImpl extends BasicLoggerImpl {
                 break;
                 
         }
-        out.write(color(BasicLoggerImpl.elapsed()));
+        out.write(color(BuiltInLoggerImpl.elapsed()));
         out.write(" ");
         out.write(color(levelStr));
         
@@ -86,7 +86,7 @@ class CliColorLoggerImpl extends BasicLoggerImpl {
             });
         messages.forEach(function(message){
             out.write(" ");
-            BasicLoggerImpl.write(message, out);
+            BuiltInLoggerImpl.write(message, out);
         });
         out.write("\n");
     }

@@ -1,15 +1,15 @@
 @nodereq stream
 
-@include BasicLoggerImpl
+@include BuiltInLoggerImpl
 @include LoggerLevel
 
-class TextLoggerImpl extends BasicLoggerImpl {
+class TextLoggerImpl extends BuiltInLoggerImpl {
     log(level:LoggerLevel, scopes:string[], messages:any[], out:stream.Writable) {
-        if(!BasicLoggerImpl.isVerbose(level))
+        if(!BuiltInLoggerImpl.isVerbose(level))
             return;
         
         out.write("[");
-        out.write(BasicLoggerImpl.elapsed());
+        out.write(BuiltInLoggerImpl.elapsed());
         out.write("]");
         
         out.write(" [");
@@ -24,7 +24,7 @@ class TextLoggerImpl extends BasicLoggerImpl {
             });
         messages.forEach(function(message){
             out.write(" ");
-            BasicLoggerImpl.write(message, out);
+            BuiltInLoggerImpl.write(message, out);
         });
         out.write("\n");
     }

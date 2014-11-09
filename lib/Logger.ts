@@ -66,6 +66,22 @@ class Logger {
             if(e !== $break)
                 throw e;
         }
+		if(!process.env.LOGGER_NEVER_ASYNC && _impl.shouldAsync()) {
+			// Wrap the real implementation in a setTimeout(0)
+			var realImpl = _impl;
+			_impl = {
+				"log": function() {
+					/*
+					  Pass exactly as it occurs this way
+					  we dont need to update this if the API changes.
+					*/
+					var args = arguments;
+					setTimeout(function() {
+						realImpl.log.apply(realImpl, args);
+					}, 0);
+				}
+			};
+		}
         return _impl;
     }
 
