@@ -14,7 +14,7 @@ it('parse package.json', function(){
         throw new Error("`package.json` missing property `main`");
 });
 var logger;
-it("require main", function(){
+it("require main", function() {
     logger = require(topDir);
 });
 describe('api', function() {

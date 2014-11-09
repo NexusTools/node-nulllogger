@@ -2,7 +2,7 @@
 	"name": "nulllogger",
 	"author": "NexusTools",
 	"homepage": "https://www.nexustools.net/projects#node-nulllogger",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"licenses": [
 		{
 			"type": "Apache License 2.0",
@@ -28,9 +28,9 @@
     "typesource": "lib",
 	"main" : "index.js",
 	"scripts": {
-		"test": "mocha --bail --require ./test/support/env --reporter spec --timeout 10000 --globals __typeinclude__ --check-leaks test/",
-		"test-coverage": "istanbul cover node_modules/mocha/bin/_mocha -- --timeout 20000 --require test/support/env --bail --reporter spec --globals __typeinclude__ --check-leaks test/",
-		"test-travis": "istanbul cover node_modules/mocha/bin/_mocha --report lcovonly -- --timeout 20000 --require test/support/env --reporter spec --globals __typeinclude__ --check-leaks test/",
+		"test": "mocha --bail --reporter spec --timeout 10000 --globals __typeinclude__ --check-leaks test/",
+		"test-coverage": "istanbul cover node_modules/mocha/bin/_mocha -- --timeout 20000 --bail --reporter spec --globals __typeinclude__ --check-leaks test/",
+		"test-travis": "istanbul cover node_modules/mocha/bin/_mocha --report lcovonly -- --timeout 20000 --reporter spec --globals __typeinclude__ --check-leaks test/",
         "postinstall": "tscac lib || true"
 	},
 	"engines" : {

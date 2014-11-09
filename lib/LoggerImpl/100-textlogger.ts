@@ -5,6 +5,9 @@
 
 class TextLoggerImpl extends BasicLoggerImpl {
     log(level:LoggerLevel, scopes:string[], messages:any[], out:stream.Writable) {
+        if(!BasicLoggerImpl.isVerbose(level))
+            return;
+        
         out.write("[");
         out.write(BasicLoggerImpl.elapsed());
         out.write("]");
@@ -23,7 +26,7 @@ class TextLoggerImpl extends BasicLoggerImpl {
             out.write(" ");
             BasicLoggerImpl.write(message, out);
         });
-        out.write("\n\n");
+        out.write("\n");
     }
 }
 

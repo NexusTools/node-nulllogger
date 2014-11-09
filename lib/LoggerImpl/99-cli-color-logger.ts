@@ -7,6 +7,9 @@
 
 class CliColorLoggerImpl extends BasicLoggerImpl {
     log(level:LoggerLevel, scopes:string[], messages:any[], out:stream.Writable) {
+        if(!BasicLoggerImpl.isVerbose(level))
+            return;
+        
         var elapsed = BasicLoggerImpl.elapsed();
         if(level >= LoggerLevel.Error)
             out.write(clc.red(elapsed));

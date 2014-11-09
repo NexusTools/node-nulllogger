@@ -8,7 +8,6 @@
 var scopeWrap = /\[([^\]]+)\]/;
 class Logger {
     private static _impl:LoggerImpl;
-    private static _minlevel:LoggerLevel = (process.env.VERBOSE || LoggerLevel.Debugging)*1;
     private static _out:(level:LoggerImpl) => stream.Writable = function(level:LoggerImpl) {
         if(level >= LoggerLevel.Error)
             return process.stderr;
@@ -70,8 +69,7 @@ class Logger {
         if(!Logger._impl)
             Logger._impl = this._init();
         
-        if(level >= Logger._minlevel)
-            return this._impl.log(level, scopes, messages, Logger._out(level));
+        return this._impl.log(level, scopes, messages, Logger._out(level));
     }
 
     static gears(...messages:any[]) {
@@ -80,6 +78,14 @@ class Logger {
 
     static performance(...messages:any[]) {
         Logger.log(LoggerLevel.Performance, undefined, messages);
+    }
+
+    static perf(...messages:any[]) {
+        Logger.log(LoggerLevel.Performance, undefined, messages);
+    }
+
+    static debugging(...messages:any[]) {
+        Logger.log(LoggerLevel.Debug, undefined, messages);
     }
 
     static debug(...messages:any[]) {
@@ -106,12 +112,25 @@ class Logger {
         Logger.log(LoggerLevel.Error, undefined, messages);
     }
 
+    static fatal(...messages:any[]) {
+        Logger.log(LoggerLevel.Error, undefined, messages);
+        process.exit(1);
+    }
+
     gears(...messages:any[]) {
         Logger.log(LoggerLevel.Gears, this._scopes, messages);
     }
 
     performance(...messages:any[]) {
         Logger.log(LoggerLevel.Performance, this._scopes, messages);
+    }
+
+    perf(...messages:any[]) {
+        Logger.log(LoggerLevel.Performance, this._scopes, messages);
+    }
+
+    debugging(...messages:any[]) {
+        Logger.log(LoggerLevel.Debug, this._scopes, messages);
     }
 
     debug(...messages:any[]) {
@@ -136,6 +155,11 @@ class Logger {
 
     error(...messages:any[]) {
         Logger.log(LoggerLevel.Error, this._scopes, messages);
+    }
+
+    fatal(...messages:any[]) {
+        Logger.log(LoggerLevel.Fatal, this._scopes, messages);
+        process.exit(1);
     }
 
 }

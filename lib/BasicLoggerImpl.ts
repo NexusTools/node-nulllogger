@@ -1,9 +1,15 @@
 @nodereq underscore:_
 
 @reference LoggerImpl
+@include LoggerLevel
 
 class BasicLoggerImpl implements LoggerImpl {
+    private static _minlevel:LoggerLevel;
     private static _start = Date.now();
+    
+    public static isVerbose(level:LoggerLevel) {
+        return level >= BasicLoggerImpl._minlevel;
+    }
     
     public static elapsed() {
         var elapsed = Date.now() - BasicLoggerImpl._start;
@@ -44,7 +50,23 @@ class BasicLoggerImpl implements LoggerImpl {
                 out.write(")");
         }
     }
-    
 }
+
+if(process.env.VERBOSE) {
+    var verbose = parseFloat(process.env.VERBOSE);
+    if(isFinite(verbose) && !isNaN(verbose))
+        BasicLoggerImpl._minlevel = verbose;
+    else {
+        verbose = process.env.VERBOSE;
+        verbose = verbose.substring(0, 1).toUpperCase() + verbose.substring(1).toLowerCase();
+        if(!LoggerLevel[verbose])
+            throw new Error(process.env.VERBOSE + " is not a valid logger verbosity setting.");
+        
+        BasicLoggerImpl._minlevel = LoggerLevel[verbose];
+    }
+} else if(process.env.NODE_ENV && process.env.NODE_ENV == "test") // Don't crowd testing output
+    BasicLoggerImpl._minlevel = LoggerLevel.Silent;
+else
+    BasicLoggerImpl._minlevel = LoggerLevel.Debugging;
 
 @main BasicLoggerImpl
