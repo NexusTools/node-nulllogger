@@ -47,10 +47,13 @@ class BasicLoggerImpl implements LoggerImpl {
                     out.write("(");
                 }
             }
-            if(message instanceof RegExp)
-                out.write(message.toString());
-            else
+            try {
+		        if (message instanceof RegExp)
+		        	throw "RegExp";
                 out.write(JSON.stringify(message));
+            } catch(e) {
+                out.write("" + message);
+            }
             if(obj)
                 out.write(")");
         }
