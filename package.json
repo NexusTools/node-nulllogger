@@ -2,7 +2,7 @@
 	"name": "nulllogger",
 	"author": "NexusTools",
 	"homepage": "https://www.nexustools.net/projects#node-nulllogger",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"licenses": [
 		{
 			"type": "Apache License 2.0",
@@ -25,8 +25,7 @@
 		"url" : "https://github.com/NexusTools/node-nulllogger.git"  
 	},
 	"preferGlobal" : true,
-    "typesource": "lib",
-	"main" : "index.js",
+	"main" : "./lib/logger.js",
 	"scripts": {
 		"test": "mocha --bail --reporter spec --timeout 10000 --globals __typeinclude__ --check-leaks test/",
 		"test-coverage": "istanbul cover node_modules/mocha/bin/_mocha -- --timeout 20000 --bail --reporter spec --globals __typeinclude__ --check-leaks test/",
@@ -36,7 +35,7 @@
 		"node" : ">=1.0.0"
 	},
 	"dependencies": {
-        "typeinclude": ">=0.4.7"
+		"underscore": "latest"
 	},
 	"devDependencies": {
 		"istanbul": "0.3.2",

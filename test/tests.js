@@ -2,6 +2,10 @@ var assert = require('assert');
 var child_process = require("child_process");
 var path = require('path');
 
+process.env.VERBOSE = 0xFF; // All possible verbosity levels
+process.env.PROCESS_SEND_LOGGER = true;
+process.env.LOGGER_NEVER_ASYNC = true;
+
 var pkg;
 var topDir = path.dirname(__dirname);
 var supportDir = path.resolve(__dirname, "support");
@@ -20,9 +24,12 @@ it("require main", function() {
 describe('api', function() {
     it("test log", function(){
         logger.gears("Test");
-        logger.info("Test", "Tester");
-        logger.warn("Test", 23);
-        logger.error("Test");
+        logger.info("Test");
+        logger.warn("Test", 44);
+        logger.error("Test", {farm: 43});
+        logger.debug(/.+/i);
+        logger.perf(new String(373.5));
+        logger.error("");
     });
     var logInstance;
     it("scope instance", function(){
