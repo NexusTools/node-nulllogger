@@ -30,6 +30,12 @@ describe('api', function() {
         logger.debug(/.+/i);
         logger.perf(new String(373.5));
         logger.error("");
+		
+		try {
+			obviouslywontexist();
+		} catch(e) {
+			logger.fatal(e);
+		}
     });
     var logInstance;
     it("scope instance", function(){
