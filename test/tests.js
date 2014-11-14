@@ -45,5 +45,6 @@ describe('api', function() {
         logInstance.debug(/.+/i);
         logInstance.perf(new String(373.5));
         logInstance.error("");
+        logInstance.fatal(new Error("Soupy monday"));
     });
 });
