@@ -53,4 +53,19 @@ describe('api', function() {
         logInstance.error("");
         logInstance.fatal(new Error("Soupy monday"));
     });
+	
+    it("scope colors", function(){
+		for(var i=0;i<255;i++) {
+			var color = i;
+			logger.log(logger.Level.Info, [color + ":" + color], ["Test"]);
+			
+			color = "x" + i.toString(16);
+			logger.log(logger.Level.Info, [color + ":" + color], ["Test"]);
+		}
+		for(var color in logger.Color) {
+			if(isNaN(color)) {
+				logger.log(logger.Level.Info, [color + ":" + color], ["Test"]);
+			}
+		}
+    });
 });
