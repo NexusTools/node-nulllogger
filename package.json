@@ -2,7 +2,7 @@
 	"name": "nulllogger",
 	"author": "NexusTools",
 	"homepage": "https://www.nexustools.net/projects#node-nulllogger",
-	"version": "0.1.9",
+	"version": "0.2.0",
 	"licenses": [
 		{
 			"type": "Apache License 2.0",
