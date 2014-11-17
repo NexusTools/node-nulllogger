@@ -22,7 +22,23 @@ it("require main", function() {
     logger = require(topDir);
 });
 describe('api', function() {
-    it("test log", function(){
+	
+    it("scope colors", function(){
+		for(var i=0;i<255;i++) {
+			var color = i;
+			logger.log(logger.Level.Info, [color + ":" + color], ["Test"]);
+			
+			color = "x" + i.toString(16);
+			logger.log(logger.Level.Info, [color + ":" + color], ["Test"]);
+		}
+		for(var color in logger.Color) {
+			if(isNaN(color)) {
+				logger.log(logger.Level.Info, [color + ":" + color], ["Test"]);
+			}
+		}
+    });
+	
+    it("static levels", function(){
         logger.gears("Test");
         logger.info("Test");
         logger.warn("Test", 44);
@@ -52,20 +68,5 @@ describe('api', function() {
         logInstance.perf(new String(373.5));
         logInstance.error("");
         logInstance.fatal(new Error("Soupy monday"));
-    });
-	
-    it("scope colors", function(){
-		for(var i=0;i<255;i++) {
-			var color = i;
-			logger.log(logger.Level.Info, [color + ":" + color], ["Test"]);
-			
-			color = "x" + i.toString(16);
-			logger.log(logger.Level.Info, [color + ":" + color], ["Test"]);
-		}
-		for(var color in logger.Color) {
-			if(isNaN(color)) {
-				logger.log(logger.Level.Info, [color + ":" + color], ["Test"]);
-			}
-		}
     });
 });
