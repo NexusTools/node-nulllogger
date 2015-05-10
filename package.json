@@ -11,11 +11,11 @@
 	],
 	"description": "A logging abstraction layer, because so many loggers seem to exist...",
 	"keywords": [
-        "async",
+    "async",
 		"NexusTools",
-        "abstract",
-        "logging",
-        "logger"
+    "abstract",
+    "logging",
+    "logger"
 	],
 	"bugs": {
 		"url" : "https://github.com/NexusTools/node-nulllogger/issues"
