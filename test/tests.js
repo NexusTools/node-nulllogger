@@ -1,9 +1,9 @@
 var assert = require('assert');
 var child_process = require("child_process");
 var path = require('path');
+require("source-map-support").install();
 
-process.env.VERBOSE = 0xFF; // All possible verbosity levels
-process.env.PROCESS_SEND_LOGGER = true;
+process.env.VERBOSE = "Gears"; // All possible verbosity levels
 process.env.LOGGER_NEVER_ASYNC = true;
 
 var pkg;
@@ -26,14 +26,14 @@ describe('api', function() {
     it("scope colors", function(){
 		for(var i=0;i<255;i++) {
 			var color = i;
-			logger.log(logger.Level.Info, [color + ":" + color], ["Test"]);
+			logger.log(logger.Level.Information, [color + ":" + color], ["Test"]);
 			
 			color = "x" + i.toString(16);
-			logger.log(logger.Level.Info, [color + ":" + color], ["Test"]);
+			logger.log(logger.Level.Information, [color + ":" + color], ["Test"]);
 		}
 		for(var color in logger.Color) {
 			if(isNaN(color)) {
-				logger.log(logger.Level.Info, [color + ":" + color], ["Test"]);
+				logger.log(logger.Level.Information, [color + ":" + color], ["Test"]);
 			}
 		}
     });
@@ -47,11 +47,6 @@ describe('api', function() {
         logger.perf(new String(373.5));
         logger.error("");
 		
-		try {
-			obviouslywontexist();
-		} catch(e) {
-			logger.fatal(e);
-		}
     });
     var logInstance;
     it("scope instance", function(){
@@ -67,6 +62,28 @@ describe('api', function() {
         logInstance.debug(/.+/i);
         logInstance.perf(new String(373.5));
         logInstance.error("");
-        logInstance.fatal(new Error("Soupy monday"));
+    });
+    it("extended scope", function(){
+        logInstance = logInstance.extend("green:Extended");
+        logInstance.info("Test");
+        logInstance.info("Test", []);
+        logInstance.info("Test", new Date());
+        logInstance.warn("Test", 44);
+        logInstance.error("Test", {farm: 43});
+        logInstance.debug(/.+/i);
+        logInstance.perf(new String(373.5));
+        logInstance.error("");
+    });
+    it("timer", function(){
+		logInstance.timer("Test", function(logInstance) {
+			logInstance.info("Test");
+			logInstance.info("Test", []);
+			logInstance.info("Test", new Date());
+			logInstance.warn("Test", 44);
+			logInstance.error("Test", {farm: 43});
+			logInstance.debug(/.+/i);
+			logInstance.perf(new String(373.5));
+			logInstance.error("");
+		});
     });
 });
