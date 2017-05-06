@@ -6,4 +6,5 @@
 *~
 *.bak
 .travis.yml
+npm-debug.log
 .gitignore

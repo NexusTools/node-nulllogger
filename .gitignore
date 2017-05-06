@@ -1,7 +1,3 @@
-/lib/*.js
-/lib/*.js.map
-/lib/impl/*.js
-/lib/impl/*.js.map
 /nbproject/private
 /node_modules
 /compiled
