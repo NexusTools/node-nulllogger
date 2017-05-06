@@ -8,7 +8,6 @@
         "sourceMap": true
     },
     "include": [
-        "*.ts",
         "lib/*.ts",
         "lib/impl/*.ts"
     ]

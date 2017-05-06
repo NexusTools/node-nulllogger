@@ -1,52 +1,52 @@
 {
-	"name": "nulllogger",
-	"author": "NexusTools",
-	"homepage": "https://www.nexustools.net/projects#node-nulllogger",
-	"version": "0.3.0",
-	"licenses": [
-		{
-			"type": "Apache License 2.0",
-			"url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-		}
-	],
-	"description": "A logging abstraction layer, because so many loggers seem to exist...",
-	"keywords": [
-    "async",
-		"NexusTools",
-		"abstract",
-		"logging",
-		"logger"
-	],
-	"bugs": {
-		"url" : "https://github.com/NexusTools/node-nulllogger/issues"
-	},
-	"repository": {
-		"type" : "git",
-		"url" : "https://github.com/NexusTools/node-nulllogger.git"
-	},
-	"preferGlobal" : true,
-	"main" : "index.js",
-	"scripts": {
-		"build": "ntsc -p .",
-		"test": "mocha --bail --reporter spec --timeout 10000 --globals __typeinclude__ --check-leaks test/",
-		"test-coverage": "istanbul cover node_modules/mocha/bin/_mocha -- --timeout 20000 --bail --reporter spec --globals __typeinclude__ --check-leaks test/",
-		"test-travis": "istanbul cover node_modules/mocha/bin/_mocha --report lcovonly -- --timeout 20000 --reporter spec --globals __typeinclude__ --check-leaks test/"
-	},
-	"engines" : {
+    "name": "nulllogger",
+    "author": "NexusTools",
+    "homepage": "https://www.nexustools.net/projects#node-nulllogger",
+    "version": "0.3.1",
+    "licenses": [
+        {
+            "type": "Apache License 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        }
+    ],
+    "description": "A logging abstraction layer, because so many loggers seem to exist...",
+    "keywords": [
+        "async",
+        "NexusTools",
+        "abstract",
+        "logging",
+        "logger"
+    ],
+    "bugs": {
+        "url" : "https://github.com/NexusTools/node-nulllogger/issues"
+    },
+    "repository": {
+        "type" : "git",
+        "url" : "https://github.com/NexusTools/node-nulllogger.git"
+    },
+    "preferGlobal" : true,
+    "main" : "index.js",
+    "scripts": {
+        "build": "node node_modules/ntypescript/bin/tsc -p .",
+        "test": "node node_modules/mocha/bin/mocha --bail --reporter spec --timeout 10000 --globals __typeinclude__ --check-leaks test/",
+        "test-coverage": "istanbul cover node_modules/mocha/bin/_mocha -- --timeout 20000 --bail --reporter spec --globals __typeinclude__ --check-leaks test/",
+        "test-travis": "istanbul cover node_modules/mocha/bin/_mocha --report lcovonly -- --timeout 20000 --reporter spec --globals __typeinclude__ --check-leaks test/"
+    },
+    "engines" : {
         "node": ">=0.11.12",
         "npm": ">=1.3.8"
-	},
-	"dependencies": {
+    },
+    "dependencies": {
         "lodash": "^4.16.4"
-	},
-	"devDependencies": {
-		"@types/node": "^6.0.45",
-		"@types/lodash": "^4.14.37",
-		"@types/cli-color": "^0.3.29",
+    },
+    "devDependencies": {
+        "@types/node": "^6.0.45",
+        "@types/lodash": "^4.14.37",
+        "@types/cli-color": "^0.3.29",
         "ntypescript": "^1.201609302242.1",
-		"source-map-support": "^0.4.3",
-		"cli-color": "^1.1.0",
+        "source-map-support": "^0.4.3",
+        "cli-color": "^1.1.0",
         "istanbul": "^0.4.5",
         "mocha": "^3.1.2"
-	}
+    }
 }

@@ -44,7 +44,7 @@ export enum Color {
 
 export interface ILoggerImpl {
 	log(level:LoggerLevel, scopes:any[][], message:any[], out:NodeJS.WritableStream):void;
-	shouldAsync():boolean;
+	allowAsync():boolean;
 }
 
 export interface INullLogger {

@@ -4,8 +4,8 @@
     "libraryDependencies": [],
     "moduleDependencies": [],
     "libraryMajorVersion": "3",
-    "libraryMinorVersion": "0",
-    "libraryName": "NullLogger 3.0",
+    "libraryMinorVersion": "1",
+    "libraryName": "NullLogger 3.1",
     "typingsPackageName": "nulllogger",
     "declaredModules": [
         "nulllogger"
