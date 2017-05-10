@@ -5,14 +5,18 @@ if (!process.env.PROCESS_SEND_LOGGER)
 if (!process.send)
     throw new Error("process.send missing, are you a worker?");
 
-import BuiltInLoggerImpl from "../BuiltInLoggerImpl";
-import { LoggerLevel, ILoggerImpl } from "../Def";
+import BaseLoggerImpl from "../baseimpl";
+import { LoggerLevel, ILoggerImpl } from "../def";
+import util = require("util");
 
 export = class ProcessSendLogger implements ILoggerImpl {
     log(level: LoggerLevel, scopes: any[][], messages: any[], out: NodeJS.WritableStream) {
         var processedMessages: string[] = [];
         messages.forEach(function(message) {
-            processedMessages.push(BuiltInLoggerImpl.stringForObject(message));
+            if(typeof message == "string")
+                processedMessages.push(message);
+            else
+                processedMessages.push(util.inspect(message));
         });
 
         process.send({

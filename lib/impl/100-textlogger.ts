@@ -1,15 +1,16 @@
-import BuiltInLoggerImpl from "../BuiltInLoggerImpl";
-import { LoggerLevel } from "../Def";
+import BaseLoggerImpl from "../baseimpl";
+import { LoggerLevel } from "../def";
+import util = require("util");
 
-export = class TextLoggerImpl extends BuiltInLoggerImpl {
+export = class TextLoggerImpl extends BaseLoggerImpl {
     log(level: LoggerLevel, scopes: any[][], messages: any[], out: NodeJS.WritableStream) {
-        if (!BuiltInLoggerImpl.isVerbose(level))
+        if (!BaseLoggerImpl.isVerbose(level))
             return;
 
         out.write("[");
-        out.write(BuiltInLoggerImpl.levelStr(level));
+        out.write(BaseLoggerImpl.levelStr(level));
         out.write(" ");
-        out.write(BuiltInLoggerImpl.elapsed());
+        out.write(BaseLoggerImpl.timestamp());
         out.write("]");
 
         scopes.forEach(function(scope) {
@@ -20,7 +21,10 @@ export = class TextLoggerImpl extends BuiltInLoggerImpl {
 
         messages.forEach(function(message) {
             out.write(" ");
-            out.write(BuiltInLoggerImpl.stringForObject(message));
+            if(typeof message == "string")
+                out.write(message);
+            else
+                out.write(util.inspect(message));
         });
 
         out.write("\n");

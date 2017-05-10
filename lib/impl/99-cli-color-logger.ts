@@ -1,11 +1,13 @@
 import clc = require("cli-color");
+import util = require("util");
 
-import BuiltInLoggerImpl from "../BuiltInLoggerImpl";
-import { Color, LoggerLevel } from "../Def";
+import BaseLoggerImpl from "../baseimpl";
+import { Color, LoggerLevel } from "../def";
 
-export = class CliColorLoggerImpl extends BuiltInLoggerImpl {
+export = class CliColorLoggerImpl extends BaseLoggerImpl {
+   
     log(level: LoggerLevel, scopes: Array<any[]>, messages: any[], out: NodeJS.WritableStream) {
-        if (!BuiltInLoggerImpl.isVerbose(level))
+        if (!BaseLoggerImpl.isVerbose(level))
             return;
 
         var color: Function, strColor: Function = function(...text: any[]): string { return text[0]; };
@@ -40,7 +42,7 @@ export = class CliColorLoggerImpl extends BuiltInLoggerImpl {
 
         }
 
-        var pre = "[" + BuiltInLoggerImpl.levelStr(level) + " " + BuiltInLoggerImpl.elapsed() + "]";
+        var pre = "[" + BaseLoggerImpl.levelStr(level) + " " + BaseLoggerImpl.timestamp() + "]";
         out.write(color(pre));
 
         scopes.forEach(function(scope) {
@@ -64,7 +66,10 @@ export = class CliColorLoggerImpl extends BuiltInLoggerImpl {
         });
         messages.forEach(function(message) {
             out.write(" ");
-            out.write(strColor(BuiltInLoggerImpl.stringForObject(message)));
+            if(typeof message == "string")
+                out.write(message);
+            else
+                out.write(strColor(util.inspect(message, { colors: true })));
         });
         out.write("\n");
     }

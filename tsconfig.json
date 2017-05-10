@@ -1,12 +1,15 @@
 {
     "compilerOptions": {
-        "target": "es5",
-		"module": "commonjs",
+        "target": "es6",
+	"module": "commonjs",
         "removeComments": true,
         "preserveConstEnums": true,
-		"moduleResolution": "node",
+	"moduleResolution": "node",
         "sourceMap": true
     },
+    "files": [
+        "test/tests.ts"
+    ],
     "include": [
         "lib/*.ts",
         "lib/impl/*.ts"

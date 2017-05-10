@@ -1,50 +1,34 @@
-var assert = require('assert');
-var child_process = require("child_process");
-var path = require('path');
+"use strict";
 require("source-map-support").install();
-
-process.env.VERBOSE = "Gears"; // All possible verbosity levels
-
-var pkg;
-var topDir = path.dirname(__dirname);
-var supportDir = path.resolve(__dirname, "support");
-var pkgfile = path.resolve(topDir, "package.json");
-it('parse package.json', function () {
-    pkg = require(pkgfile);
-    if (!pkg)
-        throw new Error("Failed to parse `package.json`");
-    if (!("main" in pkg))
-        throw new Error("`package.json` missing property `main`");
-});
+const path = require("path");
+process.env.VERBOSE = "Gears";
 var logger;
 it("require main", function () {
-    logger = require(topDir);
+    logger = require(path.dirname(__dirname));
 });
 describe('api', function () {
     it("scope colors", function () {
         for (var i = 0; i < 255; i++) {
-            var color = i;
+            let color = i;
             logger.log(logger.Level.Information, [color + ":" + color], ["Test"]);
-
             color = "x" + i.toString(16);
             logger.log(logger.Level.Information, [color + ":" + color], ["Test"]);
         }
-        for (var color in logger.Color) {
-            if (isNaN(color)) {
-                logger.log(logger.Level.Information, [color + ":" + color], ["Test"]);
-            }
-        }
+        Object.keys(logger.Color).forEach(function (color) {
+            logger.log(logger.Level.Information, [color + ":" + color], ["Test"]);
+        });
     });
-
     it("static levels", function () {
         logger.gears("Test");
         logger.info("Test");
         logger.warn("Test", 44);
-        logger.error("Test", {farm: 43});
+        logger.warning(new Date);
+        logger.error("Test", { farm: 43 });
         logger.debug(/.+/i);
+        logger.debugging(Symbol.iterator);
         logger.perf(new String(373.5));
+        logger.performance(require.extensions);
         logger.error("");
-
     });
     var logInstance;
     it("scope instance", function () {
@@ -56,9 +40,9 @@ describe('api', function () {
         logInstance.info("Test", []);
         logInstance.info("Test", new Date());
         logInstance.warn("Test", 44);
-        logInstance.error("Test", {farm: 43});
+        logInstance.error("Test", { farm: 43 });
         logInstance.debug(/.+/i);
-        logInstance.perf(new String(373.5));
+        logInstance.performance(new String(373.5));
         logInstance.error("");
     });
     it("extended scope", function () {
@@ -67,21 +51,22 @@ describe('api', function () {
         logInstance.info("Test", []);
         logInstance.info("Test", new Date());
         logInstance.warn("Test", 44);
-        logInstance.error("Test", {farm: 43});
-        logInstance.debug(/.+/i);
+        logInstance.error("Test", { farm: 43 });
+        logInstance.debugging(/.+/i);
         logInstance.perf(new String(373.5));
         logInstance.error("");
     });
     it("timer", function () {
         logInstance.timer("Test", function (logInstance) {
             logInstance.info("Test");
-            logInstance.info("Test", []);
+            logInstance.information("Test", []);
             logInstance.info("Test", new Date());
-            logInstance.warn("Test", 44);
-            logInstance.error("Test", {farm: 43});
+            logInstance.warning("Test", 44);
+            logInstance.error("Test", { farm: 43 });
             logInstance.debug(/.+/i);
             logInstance.perf(new String(373.5));
             logInstance.error("");
         });
     });
 });
+//# sourceMappingURL=tests.js.map
