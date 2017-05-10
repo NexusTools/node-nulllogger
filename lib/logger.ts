@@ -4,7 +4,7 @@ import _ = require("lodash");
 import path = require("path");
 import fs = require("fs");
 
-import { Color, LoggerLevel, INullLogger, ILoggerImpl } from "./Def";
+import { Color, LoggerLevel, INullLogger, ILoggerImpl } from "./def";
 
 var pendingAsync: any[];
 var allowAsync = "ASYNC_LOGGER" in process.env;
