@@ -76,7 +76,7 @@ export = class CliColorLoggerImpl extends BaseLoggerImpl {
         var cleaned: any[][] = [];
         if(scopes)
             scopes.forEach(function(scope) {
-                cleaned.push(_.isArray(scope) ? scope : CliColorLoggerImpl.cleanScope(scope));
+                cleaned.push(_.isArray(scope) ? scope as any : CliColorLoggerImpl.cleanScope(scope));
             });
         return cleaned;
     }

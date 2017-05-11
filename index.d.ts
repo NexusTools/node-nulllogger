@@ -42,7 +42,6 @@ declare module nulllogger {
         Level: typeof LoggerLevel;
 
         new (...scopes: string[]): INullLogger;
-        (...scopes: string[]): INullLogger;
         
         /**
          * Returns the minimum logging level, if supported by the implementation

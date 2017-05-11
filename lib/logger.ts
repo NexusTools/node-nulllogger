@@ -2,7 +2,6 @@
 
 import path = require("path");
 import _ = require("lodash");
-import fs = require("fs");
 
 import { LoggerLevel, INullLogger, ILoggerImpl } from "./def";
 
@@ -71,7 +70,7 @@ export = class NullLogger implements INullLogger {
             else
                 throw new Error("Implementation missing buildScopeCache, cannot handle unprocessed scopes");
         }
-        return NullLogger.Impl.log(level, loggerOrScopesOrScopeCache, messages);
+        return NullLogger.Impl.log(level, loggerOrScopesOrScopeCache as INullLogger|string, messages);
     }
 
     static gears(...messages: any[]) {
