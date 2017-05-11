@@ -7,7 +7,7 @@
             "email": "ktaeyln@gmail.com"
         }
     ],
-    "version": "0.5.1",
+    "version": "0.5.2",
     "license": "Apache-2.0",
     "keywords": [
         "async",
@@ -34,13 +34,10 @@
     "engines" : {
         "node": ">=6.0.0"
     },
-    "dependencies": {
-        "lodash": "^4.16.4"
-    },
+    "dependencies": {},
     "devDependencies": {
         "@types/node": "^6.0.45",
         "@types/mocha": "^2.2.41",
-        "@types/lodash": "^4.14.37",
         "@types/cli-color": "^0.3.29",
         "source-map-support": "^0.4.3",
         "typescript": "^2.3.2",

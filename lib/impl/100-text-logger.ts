@@ -1,6 +1,5 @@
 import { BaseLoggerImpl } from "../baseimpl";
 import util = require("util");
-import _ = require("lodash");
 
 export = class TextLoggerImpl extends BaseLoggerImpl {
     filename = __filename;
@@ -16,7 +15,7 @@ export = class TextLoggerImpl extends BaseLoggerImpl {
         var cleaned: string[] = [];
         if(scopes)
             scopes.forEach(function(scope) {
-                cleaned.push(_.isArray(scope) ? scope : TextLoggerImpl.cleanScope(scope));
+                cleaned.push(Array.isArray(scope) ? scope : TextLoggerImpl.cleanScope(scope));
             });
         return cleaned;
     }

@@ -1,6 +1,3 @@
-import _ = require("lodash");
-import util = require("util");
-
 import { INullLogger, LoggerLevel, ILoggerImpl } from "./def";
 
 export abstract class BaseLoggerImpl implements ILoggerImpl {

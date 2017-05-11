@@ -1,9 +1,12 @@
 import clc = require("cli-color");
 import util = require("util");
-import _ = require("lodash");
 
 import { BaseLoggerImpl } from "../baseimpl";
 import { Color, LoggerLevel } from "../def";
+
+var identity = function(obj) {
+    return obj;
+}
 
 export = class CliColorLoggerImpl extends BaseLoggerImpl {
     private static HEXREGEXP = /^0?x([a-z\d]+)$/i;
@@ -21,7 +24,7 @@ export = class CliColorLoggerImpl extends BaseLoggerImpl {
                 break;
 
             case LoggerLevel.Information:
-                color = _.identity;
+                color = identity;
                 break;
 
             case LoggerLevel.Warning:
@@ -76,7 +79,7 @@ export = class CliColorLoggerImpl extends BaseLoggerImpl {
         var cleaned: any[][] = [];
         if(scopes)
             scopes.forEach(function(scope) {
-                cleaned.push(_.isArray(scope) ? scope as any : CliColorLoggerImpl.cleanScope(scope));
+                cleaned.push(Array.isArray(scope) ? scope as any : CliColorLoggerImpl.cleanScope(scope));
             });
         return cleaned;
     }

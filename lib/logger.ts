@@ -1,7 +1,6 @@
 /// <reference path="../node_modules/@types/node/index.d.ts" />
 
 import path = require("path");
-import _ = require("lodash");
 
 import { LoggerLevel, INullLogger, ILoggerImpl } from "./def";
 
@@ -64,7 +63,7 @@ export = class NullLogger implements INullLogger {
         if (!NullLogger.Impl)
             NullLogger.Impl = NullLogger._init();
 
-        if(_.isArray(loggerOrScopesOrScopeCache)) {
+        if(Array.isArray(loggerOrScopesOrScopeCache)) {
             if(NullLogger.Impl.buildScopeCache)
                 loggerOrScopesOrScopeCache = NullLogger.Impl.buildScopeCache(loggerOrScopesOrScopeCache as string[]);
             else
