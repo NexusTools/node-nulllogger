@@ -1,16 +1,19 @@
 import clc = require("cli-color");
 import util = require("util");
+import _ = require("lodash");
 
-import BaseLoggerImpl from "../baseimpl";
+import { BaseLoggerImpl } from "../baseimpl";
 import { Color, LoggerLevel } from "../def";
 
 export = class CliColorLoggerImpl extends BaseLoggerImpl {
-   
-    log(level: LoggerLevel, scopes: Array<any[]>, messages: any[], out: NodeJS.WritableStream) {
-        if (!BaseLoggerImpl.isVerbose(level))
-            return;
-
-        var color: Function, strColor: Function = function(...text: any[]): string { return text[0]; };
+    private static HEXREGEXP = /^0?x([a-z\d]+)$/i;
+    disabled = process.env.NULLLOGGER_NO_COLOR;
+    filename = __filename;
+    inspect0(object: any) {
+        return util.inspect(object, { colors: true });
+    }
+    tag(level: LoggerLevel) {
+        var color: Function;
         switch (level) {
             case LoggerLevel.Performance:
             case LoggerLevel.Timer:
@@ -18,7 +21,7 @@ export = class CliColorLoggerImpl extends BaseLoggerImpl {
                 break;
 
             case LoggerLevel.Information:
-                color = strColor;
+                color = _.identity;
                 break;
 
             case LoggerLevel.Warning:
@@ -32,45 +35,69 @@ export = class CliColorLoggerImpl extends BaseLoggerImpl {
 
             case LoggerLevel.Debugging:
                 color = clc.white;
-                strColor = color;
                 break;
 
             default:
                 color = clc.blackBright;
-                strColor = color;
                 break;
-
         }
+        
+        return color(super.tag(level));
+    }
+    static cleanScope(scope: string): any[] {
+        scope = scope.toString();
+        var parts: any = scope.match(BaseLoggerImpl.SCOPEREGEXP);
+        if (parts) {
+            var col: any = parts[1];
+            if (isNaN(parts[1])) {
+                var hexParts = col.match(CliColorLoggerImpl.HEXREGEXP);
+                if (hexParts) // Strip the 0 if one, and avoid testing names
+                    col = parseInt(hexParts[1], 16);
+                else {
+                    if (col.length > 1)
+                        col = col.substring(0, 1).toUpperCase() + col.substring(1).toLowerCase();
+                    else
+                        col = col.toUpperCase();
 
-        var pre = "[" + BaseLoggerImpl.levelStr(level) + " " + BaseLoggerImpl.timestamp() + "]";
-        out.write(color(pre));
+                    if (col in Color)
+                        col = Color[Color[col]].toLowerCase();
+                    else
+                        col = undefined;
+                }
+            } else
+                col = col*1;
 
-        scopes.forEach(function(scope) {
-            out.write(" ");
+            scope = parts[2];
+            return [col, scope];
+        } else
+            return [undefined, scope];
+    }
+    static cleanScopes(scopes?: string[]): any[][] {
+        var cleaned: any[][] = [];
+        if(scopes)
+            scopes.forEach(function(scope) {
+                cleaned.push(_.isArray(scope) ? scope : CliColorLoggerImpl.cleanScope(scope));
+            });
+        return cleaned;
+    }
+    buildScopeCache(scopes: string[]) {
+        var scopeCache = "";
+        CliColorLoggerImpl.cleanScopes(scopes).forEach(function(scope) {
+            scopeCache += " ";
 
-            var color: any;
-            if (scope[0] in Color) {
-                color = Color[scope[0]].toLowerCase();
-                if (color == "black")
-                    color = clc.blackBright;
-                else if (color in clc)
-                    color = clc[color];
-            } else {
-                if (isNaN(scope[0]))
-                    color = clc.xterm(parseInt(scope[0].substring(1), 16));
-                else
-                    color = clc.xterm(scope[0] * 1);
+            var _clc: Function;
+            var color: any = scope[0];
+            if (typeof color == "string")
+                _clc = clc[color];
+            else if(color)
+                _clc = clc.xterm(color);
+            else {
+                scopeCache += `*${scope[1]}*`;
+                return;
             }
 
-            out.write((color || clc.magentaBright)("*" + scope[1] + "*"));
+            scopeCache += _clc(`*${scope[1]}*`);
         });
-        messages.forEach(function(message) {
-            out.write(" ");
-            if(typeof message == "string")
-                out.write(message);
-            else
-                out.write(strColor(util.inspect(message, { colors: true })));
-        });
-        out.write("\n");
+        return scopeCache;
     }
 }

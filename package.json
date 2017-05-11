@@ -7,14 +7,13 @@
             "email": "ktaeyln@gmail.com"
         }
     ],
-    "version": "0.4.0",
+    "version": "0.5.0",
     "licenses": [
         {
             "type": "Apache License 2.0",
             "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
         }
     ],
-    "description": "A logging abstraction layer, because so many loggers seem to exist...",
     "keywords": [
         "async",
         "NexusTools",
@@ -32,7 +31,7 @@
     "main" : "index.js",
     "scripts": {
         "build": "npm -v",
-        "compile": "node node_modules/ntypescript/bin/tsc -p .",
+        "compile": "node ./node_modules/typescript/lib/tsc",
         "test": "node node_modules/mocha/bin/mocha --bail --reporter spec --timeout 10000 --check-leaks test/",
         "test-coverage": "node node_modules/istanbul/lib/cli cover node_modules/mocha/bin/_mocha -- --timeout 20000 --bail --reporter spec --check-leaks test/",
         "test-travis": "istanbul cover node_modules/mocha/bin/_mocha --report lcovonly -- --timeout 20000 --reporter spec --check-leaks test/"
@@ -48,10 +47,11 @@
         "@types/mocha": "^2.2.41",
         "@types/lodash": "^4.14.37",
         "@types/cli-color": "^0.3.29",
-        "ntypescript": "^1.201609302242.1",
         "source-map-support": "^0.4.3",
+        "typescript": "^2.3.2",
         "cli-color": "^1.1.0",
         "istanbul": "^0.4.5",
-        "mocha": "^3.3.0"
+        "mocha": "^3.3.0",
+        "death": "^1.1.0"
     }
 }

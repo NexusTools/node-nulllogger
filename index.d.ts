@@ -16,33 +16,42 @@ declare module nulllogger {
         Silent = 8 // The highest possible level, meant to make things silent
     }
 
-    interface ILoggerImpl {
-        log(level: LoggerLevel, scopes: string[], message: any[], out: NodeJS.WritableStream): void;
-        shouldAsync(): boolean;
-    }
-
     interface INullLogger {
         extend(...scopes: string[]): INullLogger;
+        
         gears(...arguments: any[]): void;
         debug(...arguments: any[]): void;
         debugging(...arguments: any[]): void;
         perf(...arguments: any[]): void;
         performance(...arguments: any[]): void;
         timer(name: string, impl: (logger: INullLogger) => void): void;
+        timerAsync(name: string, impl: (logger: INullLogger, cb: Function) => void): void;
         info(...arguments: any[]): void;
         information(...arguments: any[]): void;
         warn(...arguments: any[]): void;
         warning(...arguments: any[]): void;
         error(...arguments: any[]): void;
         group(name: string, impl: (logger: INullLogger) => void): void;
+        
+        updateScopeName(scope: string, index?: number): void;
+        scopeName(index?: number): string;
     }
-
-    export var INullLoggerStatic: {
+    
+    interface INullLoggerStatic {
         Color: any;
-        Level: any;
+        Level: typeof LoggerLevel;
 
         new (...scopes: string[]): INullLogger;
         (...scopes: string[]): INullLogger;
+        
+        /**
+         * Returns the minimum logging level, if supported by the implementation
+         */
+        minLevel(): LoggerLevel;
+        /**
+         * Sets the minimum logging level, if supported by the implementation
+         */
+        setMinLevel(level: LoggerLevel);
 
         gears(...arguments: any[]): void;
         debug(...arguments: any[]): void;
@@ -56,8 +65,21 @@ declare module nulllogger {
         warning(...arguments: any[]): void;
         error(...arguments: any[]): void;
         group(name: string, impl: (logger: INullLogger) => void): void;
+        
+        log(level: LoggerLevel, loggerOrScopesOrScopeCache: INullLogger|string[]|string, messages: any[]): void;
+        
+        /**
+         * Returns or modifies an environ to tell the subprocess' NullLogger to forward all messages via process.send
+         */
+        env(env?: any): any;
+        /**
+         * Returns the filename of the current implementation
+         */
+        impl(): string;
     }
+
+    var NullLoggerStatic: INullLoggerStatic;
 }
 declare module "nulllogger" {
-    export = nulllogger.INullLoggerStatic;
+    export = nulllogger.NullLoggerStatic;
 }

@@ -1,87 +1,40 @@
 /// <reference path="../node_modules/@types/node/index.d.ts" />
 
-import _ = require("lodash");
 import path = require("path");
+import _ = require("lodash");
 import fs = require("fs");
 
-import { Color, LoggerLevel, INullLogger, ILoggerImpl } from "./def";
-
-var pendingAsync: any[];
-var allowAsync = "ASYNC_LOGGER" in process.env;
-var noLogger = "NO_LOGGER" in process.env;
-
-if(!noLogger && allowAsync) {
-    try {
-        require("death")(function() {
-            pendingAsync.forEach(function(pending) {
-                pending[0].log.apply(pending[0], pending[1]);
-                clearTimeout(pending[2]);
-            });
-        });
-        pendingAsync = [];
-    } catch(e) {
-        console.warn("'death' module is not installed, cannot provide async logging", e.stack);
-        allowAsync = false;
-    }
-}
+import { LoggerLevel, INullLogger, ILoggerImpl } from "./def";
 
 export = class NullLogger implements INullLogger {
     public static Color: any;
     public static Level: any;
+    private static Impl: ILoggerImpl;
 
-    private static hexRegexp = /^0?x([a-z\d]+)$/i;
-    private static scopeRegexp = /^(\w+|\d{1,3}|0?x[a-z\d]+):(.+)?$/i;
-
-    private static _impl: ILoggerImpl;
-    private static _streamFactory: (level: LoggerLevel) => NodeJS.WritableStream = function(level: LoggerLevel): NodeJS.WritableStream {
-        if (level >= LoggerLevel.Error)
-            return process.stderr;
-        else
-            return process.stdout;
-    };
-
-    public static setStreamFactory(factory: (level: LoggerLevel) => NodeJS.WritableStream) {
-        NullLogger._streamFactory = factory;
-    }
-
+    _scopeCache: any;
     _scopes: string[];
     constructor(...scopes: string[]) {
-        if (!(this instanceof NullLogger)) {
-            var instance = new NullLogger();
-            instance._scopes = scopes;
-            return instance;
-        }
-
         this._scopes = scopes;
     }
 
     private static _init() {
-        if(noLogger)
-            return {
-                log() {}, // NOOP
-                allowAsync() {
-                    return false;
-                }
-            };
-        
         if (process.env.LOGGER_IMPL)
             return require(process.env.LOGGER_IMPL);
 
-        var pkg = require(path.resolve(require.main.id, "package.json"));
-        if (pkg.loggerImpl) {
-            // TODO: Load typescript plugins
-            return require(pkg.loggerImpl);
-        }
-
-        var plugins: any[] = [];
-        var pluginFormat = /^(\d+)\-.+\.js$/;
+        var plugins: any[] = [
+            [0, "0-send-process.js"],
+            [98, "98-silent-logger.js"],
+            [99, "99-cli-color-logger.js"],
+            [100, "100-text-logger.js"]
+        ];
         var pluginDir = path.resolve(__dirname, "impl");
+        /*var pluginFormat = /^(\d+)\-.+\.js$/;
         fs.readdirSync(pluginDir).forEach(function(file) {
             var matches = file.match(pluginFormat);
             if (matches)
                 plugins.push([parseInt(matches[1]), file]);
         });
-        plugins.sort(function(a, b) { return a[0] - b[0] });
+        plugins.sort(function(a, b) { return a[0] - b[0] });*/
 
         var $break = new Object();
         var _impl: ILoggerImpl;
@@ -91,6 +44,8 @@ export = class NullLogger implements INullLogger {
                 try {
                     plugin = require(path.resolve(pluginDir, plugin[1]));
                     _impl = new plugin();
+                    if (_impl.disabled)
+                        throw new Error("Disabled");
                 } catch (e) {
                     lastErr = e;
                     return;
@@ -103,178 +58,145 @@ export = class NullLogger implements INullLogger {
         }
         if (!_impl)
             throw new Error("Could not create logging implementation: " + lastErr);
-        if (allowAsync && _impl.allowAsync()) {
-            // Wrap the real implementation in a setTimeout(0)
-            var realImpl = _impl;
-            _impl = {
-                log() {
-                    /*
-                      Pass exactly as it occurs this way
-                      we dont need to update this if the API changes.
-                    */
-                    var args = arguments;
-                    var pending = [realImpl, args, setTimeout(function() {
-                        pendingAsync.splice(pendingAsync.indexOf(pending), 1);
-                        realImpl.log.apply(realImpl, args);
-                    }, 0)];
-                    pendingAsync.push(pending);
-                },
-                allowAsync() {
-                    return false;
-                }
-            };
-        }
         return _impl;
     }
 
-    static cleanScope(scope: string): any[] {
-        scope = "" + scope; // Ensure its a string
-        var parts: any = scope.match(NullLogger.scopeRegexp);
-        if (parts) {
-            var col: any = parts[1];
-            if (isNaN(parts[1])) {
-                var hexParts = col.match(NullLogger.hexRegexp);
-                if (hexParts) // Strip the 0 if one, and avoid testing names
-                    col = "x" + hexParts[1];
-                else {
-                    if (col.length > 1)
-                        col = col.substring(0, 1).toUpperCase() + col.substring(1).toLowerCase();
-                    else
-                        col = col.toUpperCase();
+    static log(level: LoggerLevel, loggerOrScopesOrScopeCache: INullLogger|string[]|string, messages: any[]) {
+        if (!NullLogger.Impl)
+            NullLogger.Impl = NullLogger._init();
 
-                    if (col in Color)
-                        col = Color[col];
-                    else
-                        col = Color.Magenta;
-                }
-            } else
-                col = "x" + (col * 1).toString(16);
-
-            scope = parts[2];
-            return [col, scope];
-        } else
-            return [Color.Magenta, scope];
-    }
-
-    static cleanScopes(scopes: string[]): any[][] {
-        var cleaned: any[][] = [];
-        scopes.forEach(function(scope) {
-            cleaned.push(_.isArray(scope) ? scope : NullLogger.cleanScope(scope));
-        });
-        return cleaned;
-    }
-
-    static log(level: LoggerLevel, scopes: string[], messages: any[]) {
-        if (!NullLogger._impl)
-            NullLogger._impl = NullLogger._init();
-
-        return NullLogger._impl.log(level, NullLogger.cleanScopes(scopes), messages, NullLogger._streamFactory(level));
+        if(_.isArray(loggerOrScopesOrScopeCache)) {
+            if(NullLogger.Impl.buildScopeCache)
+                loggerOrScopesOrScopeCache = NullLogger.Impl.buildScopeCache(loggerOrScopesOrScopeCache as string[]);
+            else
+                throw new Error("Implementation missing buildScopeCache, cannot handle unprocessed scopes");
+        }
+        return NullLogger.Impl.log(level, loggerOrScopesOrScopeCache, messages);
     }
 
     static gears(...messages: any[]) {
-        NullLogger.log(LoggerLevel.Gears, [], messages);
+        NullLogger.log(LoggerLevel.Gears, undefined, messages);
     }
 
     static performance(...messages: any[]) {
-        NullLogger.log(LoggerLevel.Performance, [], messages);
+        NullLogger.log(LoggerLevel.Performance, undefined, messages);
     }
 
     static perf(...messages: any[]) {
-        NullLogger.log(LoggerLevel.Performance, [], messages);
+        NullLogger.log(LoggerLevel.Performance, undefined, messages);
     }
 
     static debugging(...messages: any[]) {
-        NullLogger.log(LoggerLevel.Debugging, [], messages);
+        NullLogger.log(LoggerLevel.Debugging, undefined, messages);
     }
 
     static debug(...messages: any[]) {
-        NullLogger.log(LoggerLevel.Debugging, [], messages);
+        NullLogger.log(LoggerLevel.Debugging, undefined, messages);
     }
 
     static info(...messages: any[]) {
-        NullLogger.log(LoggerLevel.Information, [], messages);
+        NullLogger.log(LoggerLevel.Information, undefined, messages);
     }
 
     static information(...messages: any[]) {
-        NullLogger.log(LoggerLevel.Information, [], messages);
+        NullLogger.log(LoggerLevel.Information, undefined, messages);
     }
 
     static warn(...messages: any[]) {
-        NullLogger.log(LoggerLevel.Warning, [], messages);
+        NullLogger.log(LoggerLevel.Warning, undefined, messages);
     }
 
     static warning(...messages: any[]) {
-        NullLogger.log(LoggerLevel.Warning, [], messages);
+        NullLogger.log(LoggerLevel.Warning, undefined, messages);
     }
 
     static error(...messages: any[]) {
-        NullLogger.log(LoggerLevel.Error, [], messages);
+        NullLogger.log(LoggerLevel.Error, undefined, messages);
     }
 
     static fatal(...messages: any[]) {
-        NullLogger.log(LoggerLevel.Error, [], messages);
+        NullLogger.log(LoggerLevel.Error, undefined, messages);
         process.exit(1);
+    }
+    
+    static env(env?: any) {
+        env = env || {};
+        env.PROCESS_SEND_LOGGER = NullLogger.Impl.filename;
+        NullLogger.Impl.extendEnv(env);
+        return env;
+    }
+    
+    static setMinLevel?(level: LoggerLevel): void{
+        if(NullLogger.Impl.setMinLevel)
+            NullLogger.Impl.setMinLevel(level);
+    }
+    static minLevel?(): LoggerLevel{
+        return NullLogger.Impl.minLevel ? NullLogger.Impl.minLevel() : undefined;
+    }
+    
+    static impl() {
+        return NullLogger.Impl.filename;
     }
 
     gears(...messages: any[]) {
-        NullLogger.log(LoggerLevel.Gears, this._scopes, messages);
+        NullLogger.log(LoggerLevel.Gears, this, messages);
     }
 
     timer(name: string, impl: (logger: INullLogger) => void) {
         var logger = this.extend(name);
-        NullLogger.log(LoggerLevel.Timer, logger._scopes, ["Starting..."]);
+        NullLogger.log(LoggerLevel.Timer, logger, ["Starting..."]);
         var start = +new Date;
         impl(logger);
-        NullLogger.log(LoggerLevel.Timer, logger._scopes, ["Took " + ((+new Date) - start) + "ms."]);
+        NullLogger.log(LoggerLevel.Timer, logger, ["Took " + ((+new Date) - start) + "ms."]);
     }
 
     timerAsync(name: string, impl: (logger: INullLogger, cb: Function) => void) {
         var logger = this.extend(name);
-        NullLogger.log(LoggerLevel.Timer, logger._scopes, ["Starting..."]);
+        NullLogger.log(LoggerLevel.Timer, logger, ["Starting..."]);
         var start = +new Date;
         impl(logger, function() {
-            NullLogger.log(LoggerLevel.Timer, logger._scopes, ["Took " + ((+new Date) - start) + "ms."]);
+            NullLogger.log(LoggerLevel.Timer, logger, ["Took " + ((+new Date) - start) + "ms."]);
         });
     }
 
     performance(...messages: any[]) {
-        NullLogger.log(LoggerLevel.Performance, this._scopes, messages);
+        NullLogger.log(LoggerLevel.Performance, this, messages);
     }
 
     perf(...messages: any[]) {
-        NullLogger.log(LoggerLevel.Performance, this._scopes, messages);
+        NullLogger.log(LoggerLevel.Performance, this, messages);
     }
 
     debugging(...messages: any[]) {
-        NullLogger.log(LoggerLevel.Debugging, this._scopes, messages);
+        NullLogger.log(LoggerLevel.Debugging, this, messages);
     }
 
     debug(...messages: any[]) {
-        NullLogger.log(LoggerLevel.Debugging, this._scopes, messages);
+        NullLogger.log(LoggerLevel.Debugging, this, messages);
     }
 
     info(...messages: any[]) {
-        NullLogger.log(LoggerLevel.Information, this._scopes, messages);
+        NullLogger.log(LoggerLevel.Information, this, messages);
     }
 
     information(...messages: any[]) {
-        NullLogger.log(LoggerLevel.Information, this._scopes, messages);
+        NullLogger.log(LoggerLevel.Information, this, messages);
     }
 
     warn(...messages: any[]) {
-        NullLogger.log(LoggerLevel.Warning, this._scopes, messages);
+        NullLogger.log(LoggerLevel.Warning, this, messages);
     }
 
     warning(...messages: any[]) {
-        NullLogger.log(LoggerLevel.Warning, this._scopes, messages);
+        NullLogger.log(LoggerLevel.Warning, this, messages);
     }
 
     error(...messages: any[]) {
-        NullLogger.log(LoggerLevel.Error, this._scopes, messages);
+        NullLogger.log(LoggerLevel.Error, this, messages);
     }
 
     fatal(...messages: any[]) {
-        NullLogger.log(LoggerLevel.Fatal, this._scopes, messages);
+        NullLogger.log(LoggerLevel.Fatal, this, messages);
         process.exit(1);
     }
 
@@ -290,6 +212,21 @@ export = class NullLogger implements INullLogger {
 
     group(name: string, impl: (logger: INullLogger) => void) {
         impl(this.extend(name));
+    }
+    
+    updateScopeName(scope: string, index = -1) {
+        if(index < 0)
+            this._scopes[this._scopes.length + index] = scope;
+        else
+            this._scopes[index] = scope;
+        delete this._scopeCache;
+    }
+    
+    scopeName(index: number = -1) {
+        if(index < 0)
+            return this._scopes[this._scopes.length + index];
+        else
+            return this._scopes[index];
     }
 
 }

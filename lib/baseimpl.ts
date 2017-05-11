@@ -1,17 +1,25 @@
 import _ = require("lodash");
 import util = require("util");
 
-import { LoggerLevel, ILoggerImpl } from "./def";
+import { INullLogger, LoggerLevel, ILoggerImpl } from "./def";
 
-export default class BaseLoggerImpl implements ILoggerImpl {
-    public static _minlevel: LoggerLevel;
-    public static _months = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
+export abstract class BaseLoggerImpl implements ILoggerImpl {
+    public static MIN_LEVEL: LoggerLevel;
+    public static MONTHS = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
+    public static SCOPEREGEXP = /^(\w+|\d{1,3}|0?x[a-z\d]+):(.+)?$/i;
+    public static OUT = process.stdout;
+    public static ERR = process.stderr;
+    filename: string;
 
     static isVerbose(level: LoggerLevel) {
-        return level >= BaseLoggerImpl._minlevel;
+        return level >= BaseLoggerImpl.MIN_LEVEL;
+    }
+    
+    extendEnv(env) {
+        env.VERBOSE = 8 - BaseLoggerImpl.MIN_LEVEL;
     }
 
-    static levelStr(level: number): string {
+    levelStr(level: number): string {
         switch (level) {
             case LoggerLevel.Gears:
                 return "Gears";
@@ -42,10 +50,6 @@ export default class BaseLoggerImpl implements ILoggerImpl {
 
         }
     }
-
-    inspect(object: any): string {
-        return util.inspect(object);
-    }
     
     static pad(val: number, amnt = 2) {
         var str = val.toString();
@@ -54,64 +58,62 @@ export default class BaseLoggerImpl implements ILoggerImpl {
         return str;
     }
 
-    static timestamp() {
+    timestamp() {
         var now = new Date;
-        return `${BaseLoggerImpl._months[now.getMonth()]} ${now.getDate()} ${now.getFullYear()} ${BaseLoggerImpl.pad(now.getHours())}:${BaseLoggerImpl.pad(now.getMinutes())}:${BaseLoggerImpl.pad(now.getSeconds())}.${BaseLoggerImpl.pad(now.getMilliseconds(), 3)}`;
+        return `${BaseLoggerImpl.MONTHS[now.getMonth()]} ${now.getDate()} ${now.getFullYear()} ${BaseLoggerImpl.pad(now.getHours())}:${BaseLoggerImpl.pad(now.getMinutes())}:${BaseLoggerImpl.pad(now.getSeconds())}.${BaseLoggerImpl.pad(now.getMilliseconds(), 3)}`;
     }
-
-    log(level: LoggerLevel, scopes: any[][], message: any[], out: NodeJS.WritableStream): void {
-        throw new Error("Not implemented here");
+    
+    tag(level: LoggerLevel) {
+        return `[${this.levelStr(level)} ${this.timestamp()}]`;
     }
+    
+    abstract inspect0(object: any): string;
+    abstract buildScopeCache(scopes: string[]): string;
 
-    allowAsync(): boolean {
-        return true;
+    log(level: LoggerLevel, loggerOrScopeCache: INullLogger|string, message: any[]): void {
+        if (!BaseLoggerImpl.isVerbose(level))
+            return;
+            
+        var msg = this.tag(level);
+        if(typeof loggerOrScopeCache == "string")
+            msg += loggerOrScopeCache;
+        else if(loggerOrScopeCache) {
+            if(!loggerOrScopeCache._scopeCache)
+                loggerOrScopeCache._scopeCache = this.buildScopeCache(loggerOrScopeCache._scopes);
+            msg += loggerOrScopeCache._scopeCache;
+        }
+        message.forEach((object) => {
+            msg += " ";
+            if(typeof object == "string")
+                msg += object;
+            else
+                msg += this.inspect0(object);
+        });
+        msg += "\n";
+        (level >= LoggerLevel.Error ? BaseLoggerImpl.ERR : BaseLoggerImpl.OUT).write(msg);
     }
-
+    
+    setMinLevel?(level: LoggerLevel): void{
+        BaseLoggerImpl.MIN_LEVEL = level;
+    }
+    minLevel?(): LoggerLevel{
+        return BaseLoggerImpl.MIN_LEVEL;
+    }
 }
 
 if (process.env.VERBOSE) {
     var verbose: any = parseFloat(process.env.VERBOSE);
     if (isFinite(verbose) && !isNaN(verbose))
-        BaseLoggerImpl._minlevel = 8 - verbose;
+        BaseLoggerImpl.MIN_LEVEL = 8 - verbose;
     else {
         verbose = process.env.VERBOSE;
         verbose = verbose.substring(0, 1).toUpperCase() + verbose.substring(1).toLowerCase();
         if (!(verbose in LoggerLevel))
             throw new Error(process.env.VERBOSE + " is not a valid logger verbosity setting.");
 
-        switch (LoggerLevel[verbose]) {
-            default:
-                BaseLoggerImpl._minlevel = LoggerLevel.Gears;
-                break;
-            case "Debug":
-                BaseLoggerImpl._minlevel = LoggerLevel.Debug;
-                break;
-            case "Perf":
-                BaseLoggerImpl._minlevel = LoggerLevel.Perf;
-                break;
-            case "Timer":
-                BaseLoggerImpl._minlevel = LoggerLevel.Timer;
-                break;
-            case "Info":
-                BaseLoggerImpl._minlevel = LoggerLevel.Info;
-                break;
-            case "Warn":
-                BaseLoggerImpl._minlevel = LoggerLevel.Warn;
-                break;
-            case "Error":
-                BaseLoggerImpl._minlevel = LoggerLevel.Error;
-                break;
-            case "Fatal":
-                BaseLoggerImpl._minlevel = LoggerLevel.Fatal;
-                break;
-            case "Silent":
-                BaseLoggerImpl._minlevel = LoggerLevel.Silent;
-                break;
-        }
-        //BaseLoggerImpl._minlevel = LoggerLevel[verbose];
-        console.log(BaseLoggerImpl._minlevel);
+        BaseLoggerImpl.MIN_LEVEL = LoggerLevel[verbose as string];
     }
 } else if (process.env.NODE_ENV === "test")
-    BaseLoggerImpl._minlevel = LoggerLevel.Debugging;
+    BaseLoggerImpl.MIN_LEVEL = LoggerLevel.Debugging;
 else
-    BaseLoggerImpl._minlevel = LoggerLevel.Timer;
+    BaseLoggerImpl.MIN_LEVEL = LoggerLevel.Timer;
