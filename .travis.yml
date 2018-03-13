@@ -2,6 +2,7 @@ language: node_js
 node_js:
   - "6"
   - "7"
-before_script: "npm run-script build"
+  - "8"
+  - "9"
 script: "npm run-script test-travis"
-after_script: "npm install coveralls@2.13.1 && cat ./coverage/lcov.info | coveralls"
+after_script: "npm install coveralls@3.0.0 && cat ./coverage/lcov.info | coveralls"
