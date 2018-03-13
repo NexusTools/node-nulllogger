@@ -118,15 +118,19 @@ it("process.send", function () {
     process.send = function (dat) {
         sawProcessSend = true;
         assert.equal(dat.cmd, "log");
-        logInstance.info(dat.data);
     };
     process.env.PROCESS_SEND_LOGGER = path.resolve(__dirname, "testimpl.js");
+    const sendProcessResolved = require.resolve("../lib/impl/0-send-process");
+    delete require.cache[sendProcessResolved];
+    logger['Impl'] = new (require(sendProcessResolved));
     var log = new logger("x00:Mocha", "cyan:ProcessSend");
     log.info("Test", new Date);
     if (!sawProcessSend)
         throw new Error("process.send was never called");
     sawProcessSend = false;
     process.env.PROCESS_SEND_LOGGER = path.resolve(__dirname, "../lib/impl/99-cli-color-logger.js");
+    delete require.cache[sendProcessResolved];
+    logger['Impl'] = new (require(sendProcessResolved));
     log = new logger("x00:Mocha", "cyan:ProcessSend");
     log.info("Test", new Date);
     if (!sawProcessSend)
