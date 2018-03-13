@@ -1,4 +1,4 @@
-/// <reference path="../../node_modules/@types/node/index.d.ts" />
+/// <reference types="node" />
 
 if (!process.env.PROCESS_SEND_LOGGER)
     throw new Error("Not enabled");
@@ -7,7 +7,7 @@ if (process.env.PROCESS_SEND_LOGGER == __filename)
 if (!process.send)
     throw new Error("process.send missing, are you a worker?");
 
-import { INullLogger, LoggerLevel, ILoggerImpl } from "../def";
+import { INullLogger, LoggerLevel, ILoggerImpl } from "../../types";
 import { BaseLoggerImpl } from "../baseimpl";
 import util = require("util");
 

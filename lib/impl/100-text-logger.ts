@@ -1,3 +1,4 @@
+import { INullLogger, LoggerLevel, ILoggerImpl } from "../../types";
 import { BaseLoggerImpl } from "../baseimpl";
 import util = require("util");
 

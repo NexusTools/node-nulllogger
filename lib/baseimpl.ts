@@ -1,4 +1,4 @@
-import { INullLogger, LoggerLevel, ILoggerImpl } from "./def";
+import { INullLogger, LoggerLevel, ILoggerImpl } from "../types";
 
 export abstract class BaseLoggerImpl implements ILoggerImpl {
     public static MIN_LEVEL: LoggerLevel;
@@ -61,7 +61,7 @@ export abstract class BaseLoggerImpl implements ILoggerImpl {
     }
     
     tag(level: LoggerLevel) {
-        return `[${this.levelStr(level)} ${this.timestamp()}]`;
+        return "";
     }
     
     abstract inspect0(object: any): string;
@@ -98,18 +98,19 @@ export abstract class BaseLoggerImpl implements ILoggerImpl {
     }
 }
 
+if(process.env.LOGGER_NO_TIMESTAMP)
+    BaseLoggerImpl.prototype.tag = function(this: BaseLoggerImpl, level: LoggerLevel) {
+        return `[${this.levelStr(level)}]`;
+    }
+else
+    BaseLoggerImpl.prototype.tag = function(this: BaseLoggerImpl, level: LoggerLevel) {
+        return `[${this.levelStr(level)} ${this.timestamp()}]`;
+    }
+
 if (process.env.VERBOSE) {
-    var verbose: any = parseFloat(process.env.VERBOSE);
+    var verbose = parseInt(process.env.VERBOSE);
     if (isFinite(verbose) && !isNaN(verbose))
         BaseLoggerImpl.MIN_LEVEL = 8 - verbose;
-    else {
-        verbose = process.env.VERBOSE;
-        verbose = verbose.substring(0, 1).toUpperCase() + verbose.substring(1).toLowerCase();
-        if (!(verbose in LoggerLevel))
-            throw new Error(process.env.VERBOSE + " is not a valid logger verbosity setting.");
-
-        BaseLoggerImpl.MIN_LEVEL = LoggerLevel[verbose as string];
-    }
 } else if (process.env.NODE_ENV === "test")
     BaseLoggerImpl.MIN_LEVEL = LoggerLevel.Debugging;
 else

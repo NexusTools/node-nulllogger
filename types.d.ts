@@ -1,4 +1,4 @@
-export enum LoggerLevel {
+export const enum LoggerLevel {
     Gears = 0, // Internal low-level mechanisms
     Debugging = 1, // Basic debugging
     Debug = 1,
@@ -15,7 +15,7 @@ export enum LoggerLevel {
     Silent = 8 // The highest possible level, meant to make things silent
 }
 
-export enum Color {
+export const enum Color {
     E = 0,
     Grey = 0,
     Black = 0,
@@ -61,17 +61,18 @@ export interface INullLogger {
     updateScopeName(scope: string, index?: number): void;
     
     extend(...scopes: string[]): INullLogger;
-    gears(...message: any[]): void;
-    debug(...message: any[]): void;
-    debugging(...message: any[]): void;
-    perf(...message: any[]): void;
-    performance(...message: any[]): void;
-    timer(name: string, impl: (logger: INullLogger) => void): void;
-    timerAsync(name: string, impl: (logger: INullLogger, cb: Function) => void): void;
-    info(...message: any[]): void;
-    information(...message: any[]): void;
-    warn(...message: any[]): void;
-    warning(...message: any[]): void;
-    error(...message: any[]): void;
-    group(name: string, impl: (logger: INullLogger) => void): void;
+    gears(...message: any[]): this;
+    debug(...message: any[]): this;
+    debugging(...message: any[]): this;
+    perf(...message: any[]): this;
+    performance(...message: any[]): this;
+    timer(name: string, impl: (logger: INullLogger) => void): this;
+    timerAsync(name: string, impl: (logger: INullLogger, cb: Function) => void): this;
+    info(...message: any[]): this;
+    information(...message: any[]): this;
+    warn(...message: any[]): this;
+    warning(...message: any[]): this;
+    error(...message: any[]): this;
+    fatal(...message: any[]): void;
+    group(name: string, impl: (logger: INullLogger) => void): this;
 }

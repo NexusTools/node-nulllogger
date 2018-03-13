@@ -2,7 +2,7 @@ import clc = require("cli-color");
 import util = require("util");
 
 import { BaseLoggerImpl } from "../baseimpl";
-import { Color, LoggerLevel } from "../def";
+import { INullLogger, Color, LoggerLevel } from "../../types";
 
 var identity = function(obj) {
     return obj;
@@ -57,15 +57,52 @@ export = class CliColorLoggerImpl extends BaseLoggerImpl {
                 if (hexParts) // Strip the 0 if one, and avoid testing names
                     col = parseInt(hexParts[1], 16);
                 else {
-                    if (col.length > 1)
-                        col = col.substring(0, 1).toUpperCase() + col.substring(1).toLowerCase();
-                    else
-                        col = col.toUpperCase();
-
-                    if (col in Color)
-                        col = Color[Color[col]].toLowerCase();
-                    else
-                        col = undefined;
+                    switch(col.toLowerCase()) {
+                        case "e":
+                        case "grey":
+                        case "black":
+                            col = 0;
+                            break;
+                            
+                        case "r":
+                        case "red":
+                            col = 1;
+                            break;
+                            
+                        case "g":
+                        case "green":
+                            col = 2;
+                            break;
+                            
+                        case "y":
+                        case "yellow":
+                            col = 3;
+                            break;
+                            
+                        case "b":
+                        case "blue":
+                            col = 4;
+                            break;
+                            
+                        case "m":
+                        case "magenta":
+                            col = 5;
+                            break;
+                            
+                        case "c":
+                        case "cyan":
+                            col = 6;
+                            break;
+                            
+                        case "w":
+                        case "white":
+                            col = 7;
+                            break;
+                        
+                        default:
+                            col = undefined;
+                    }
+                        
                 }
             } else
                 col = col*1;

@@ -1,12 +1,10 @@
-/// <reference path="../node_modules/@types/node/index.d.ts" />
+/// <reference types="node" />
 
 import path = require("path");
 
-import { LoggerLevel, INullLogger, ILoggerImpl } from "./def";
+import { LoggerLevel, INullLogger, ILoggerImpl, Color } from "../types";
 
 export = class NullLogger implements INullLogger {
-    public static Color: any;
-    public static Level: any;
     private static Impl: ILoggerImpl;
 
     _scopeCache: any;
@@ -138,6 +136,7 @@ export = class NullLogger implements INullLogger {
 
     gears(...messages: any[]) {
         NullLogger.log(LoggerLevel.Gears, this, messages);
+        return this;
     }
 
     timer(name: string, impl: (logger: INullLogger) => void) {
@@ -146,6 +145,7 @@ export = class NullLogger implements INullLogger {
         var start = +new Date;
         impl(logger);
         NullLogger.log(LoggerLevel.Timer, logger, ["Took " + ((+new Date) - start) + "ms."]);
+        return this;
     }
 
     timerAsync(name: string, impl: (logger: INullLogger, cb: Function) => void) {
@@ -155,42 +155,52 @@ export = class NullLogger implements INullLogger {
         impl(logger, function() {
             NullLogger.log(LoggerLevel.Timer, logger, ["Took " + ((+new Date) - start) + "ms."]);
         });
+        return this;
     }
 
     performance(...messages: any[]) {
         NullLogger.log(LoggerLevel.Performance, this, messages);
+        return this;
     }
 
     perf(...messages: any[]) {
         NullLogger.log(LoggerLevel.Performance, this, messages);
+        return this;
     }
 
     debugging(...messages: any[]) {
         NullLogger.log(LoggerLevel.Debugging, this, messages);
+        return this;
     }
 
     debug(...messages: any[]) {
         NullLogger.log(LoggerLevel.Debugging, this, messages);
+        return this;
     }
 
     info(...messages: any[]) {
         NullLogger.log(LoggerLevel.Information, this, messages);
+        return this;
     }
 
     information(...messages: any[]) {
         NullLogger.log(LoggerLevel.Information, this, messages);
+        return this;
     }
 
     warn(...messages: any[]) {
         NullLogger.log(LoggerLevel.Warning, this, messages);
+        return this;
     }
 
     warning(...messages: any[]) {
         NullLogger.log(LoggerLevel.Warning, this, messages);
+        return this;
     }
 
     error(...messages: any[]) {
         NullLogger.log(LoggerLevel.Error, this, messages);
+        return this;
     }
 
     fatal(...messages: any[]) {
@@ -198,7 +208,7 @@ export = class NullLogger implements INullLogger {
         process.exit(1);
     }
 
-    extend(...scopes: string[]): INullLogger {
+    extend(...scopes: string[]): NullLogger {
         var merged = this._scopes.slice();
         for (var i = 0; i < scopes.length; i++)
             merged.push(scopes[i]);
@@ -210,6 +220,7 @@ export = class NullLogger implements INullLogger {
 
     group(name: string, impl: (logger: INullLogger) => void) {
         impl(this.extend(name));
+        return this;
     }
     
     updateScopeName(scope: string, index = -1) {
@@ -218,6 +229,7 @@ export = class NullLogger implements INullLogger {
         else
             this._scopes[index] = scope;
         delete this._scopeCache;
+        return this;
     }
     
     scopeName(index: number = -1) {

@@ -2,13 +2,11 @@
     "name": "nulllogger",
     "author": "NexusTools <contact@nexustools.com>",
     "contributors": [
-        {
-            "name": "Katelyn Slater",
-            "email": "ktaeyln@gmail.com"
-        }
+        "\"Katelyn Slater\" <kate@nexustools.com>"
     ],
-    "version": "0.5.2",
+    "version": "0.6.0",
     "license": "Apache-2.0",
+    "typings": "./index.d.ts",
     "keywords": [
         "async",
         "NexusTools",
@@ -17,33 +15,30 @@
         "logger"
     ],
     "bugs": {
-        "url" : "https://github.com/NexusTools/node-nulllogger/issues"
+        "url": "https://github.com/NexusTools/node-nulllogger/issues"
     },
     "repository": {
-        "type" : "git",
-        "url" : "https://github.com/NexusTools/node-nulllogger.git"
+        "type": "git",
+        "url": "https://github.com/NexusTools/node-nulllogger.git"
     },
-    "main" : "index.js",
+    "main": "index.js",
     "scripts": {
-        "build": "npm -v",
-        "compile": "node ./node_modules/typescript/lib/tsc",
         "test": "node node_modules/mocha/bin/mocha --bail --reporter spec --timeout 10000 --check-leaks test/",
         "test-coverage": "node node_modules/istanbul/lib/cli cover node_modules/mocha/bin/_mocha -- --timeout 20000 --bail --reporter spec --check-leaks test/",
         "test-travis": "istanbul cover node_modules/mocha/bin/_mocha --report lcovonly -- --timeout 20000 --reporter spec --check-leaks test/"
     },
-    "engines" : {
+    "engines": {
         "node": ">=6.0.0"
     },
     "dependencies": {},
     "devDependencies": {
-        "@types/node": "^6.0.45",
-        "@types/mocha": "^2.2.41",
+        "@types/node": "^9.4.7",
+        "@types/mocha": "^2.2.48",
         "@types/cli-color": "^0.3.29",
-        "source-map-support": "^0.4.3",
-        "typescript": "^2.3.2",
-        "cli-color": "^1.1.0",
+        "source-map-support": "^0.5.3",
+        "cli-color": "^1.2.0",
         "istanbul": "^0.4.5",
-        "mocha": "^3.3.0",
+        "mocha": "^5.0.4",
         "death": "^1.1.0"
     }
 }

@@ -1,13 +1,17 @@
 {
+    "compileOnSave": true,
     "compilerOptions": {
         "target": "es6",
+        "declaration": true,
 	"module": "commonjs",
-        "removeComments": true,
         "preserveConstEnums": true,
 	"moduleResolution": "node",
         "skipLibCheck": true,
         "sourceMap": true
     },
+    "files": [
+        "index.ts"
+    ],
     "include": [
         "lib/*.ts",
         "lib/impl/*.ts",

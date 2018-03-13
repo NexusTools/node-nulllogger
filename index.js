@@ -1,5 +1,4 @@
-var Logger = require("./lib/logger.js");
-var Def = require("./lib/def.js");
-Logger.Level = Def.LoggerLevel;
-Logger.Color = Def.Color;
-module.exports = Logger;
+"use strict";
+const logger = require("./lib/logger");
+module.exports = logger;
+//# sourceMappingURL=index.js.map
