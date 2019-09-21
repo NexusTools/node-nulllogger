@@ -1,20 +1,20 @@
 {
-    "compileOnSave": true,
-    "compilerOptions": {
-        "target": "es6",
-        "declaration": true,
-	"module": "commonjs",
-        "preserveConstEnums": true,
-	"moduleResolution": "node",
-        "skipLibCheck": true,
-        "sourceMap": true
-    },
-    "files": [
-        "index.ts"
-    ],
-    "include": [
-        "lib/*.ts",
-        "lib/impl/*.ts",
-        "test/*.ts"
-    ]
+  "compileOnSave": true,
+  "compilerOptions": {
+    "target": "es6",
+    "declaration": true,
+    "module": "commonjs",
+    "preserveConstEnums": true,
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "sourceMap": true
+  },
+  "files": [
+    "index.ts"
+  ],
+  "include": [
+    "lib/*.ts",
+    "lib/impl/*.ts",
+    "test/*.ts"
+  ]
 }

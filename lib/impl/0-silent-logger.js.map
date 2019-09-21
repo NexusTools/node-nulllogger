@@ -1,0 +1,1 @@
+{"version":3,"file":"0-silent-logger.js","sourceRoot":"","sources":["0-silent-logger.ts"],"names":[],"mappings":";AACA,0CAAwD;AAExD,IAAI,kBAAc,CAAC,SAAS,iBAAqB;IAC/C,MAAM,IAAI,KAAK,CAAC,iCAAiC,CAAC,CAAC;AAErD,iBAAS,MAAM,gBAAgB;IAAtB;QACP,aAAQ,GAAG,UAAU,CAAC;IAGxB,CAAC;IAFC,SAAS,CAAC,GAAG,IAAI,CAAC;IAClB,GAAG,KAAK,CAAC;CACV,CAAA"}
