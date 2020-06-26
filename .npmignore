@@ -1,7 +1,7 @@
-/nbproject
-/node_modules
-/coverage
-/test
+.nyc_output
+node_modules
+coverage
+test
 
 *~
 *.bak
